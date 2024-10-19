@@ -79,14 +79,14 @@ public class HomePage extends JFrame {
             donationFrameHeadLabel.setBounds(0, 0, 800, 100);
             donateFrame.add(donationFrameHeadLabel);
 
-            JLabel donateChoice = new JLabel("Type of donation:");
+            JLabel donateChoice = new JLabel("Type of donation :");
             donateChoice.setFont(componentFont);
-            donateChoice.setBounds(230, 127, 150, 20);
+            donateChoice.setBounds(230, 157, 150, 20);
             donateFrame.add(donateChoice);
 
             String[] donationTypes = {"Select", "Plant", "Money"};
             JComboBox<String> donationType = new JComboBox<>(donationTypes);
-            donationType.setBounds(400, 120, 150, 35);
+            donationType.setBounds(400, 150, 150, 35);
             donationType.setRenderer(new CenteredComboBoxRenderer());
             donationType.setFont(componentFont);
             donateFrame.add(donationType);
@@ -113,7 +113,7 @@ public class HomePage extends JFrame {
             mainFrame.setVisible(false);
             JFrame orderFrame = new JFrame("Order Frame");
             orderFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            orderFrame.setSize(800, 400);
+            orderFrame.setSize(800, 500);
             orderFrame.setLocationRelativeTo(null);
             orderFrame.setLayout(null);
             orderFrame.setFont(componentFont);
@@ -131,16 +131,34 @@ public class HomePage extends JFrame {
             orderMethod(orderFrame, mainFrame);
         });
 
+
         JButton logoutButton = new JButton("Logout");
         logoutButton.setBounds(650, 20, 100, 30);
         logoutButton.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         panel.add(logoutButton);
 
         logoutButton.addActionListener(_ -> {
-            SessionUtil.setLoggedInUserId(0); // Clear the logged-in user ID
-            new LoginPage(); // Redirect to login page
-            mainFrame.dispose(); // Close the home page
+            new Thread(() -> {
+                SessionUtil.setLoggedInUserId(0); // Clear the logged-in user ID
+                SwingUtilities.invokeLater(() -> {
+                    new LoginPage(); // Redirect to login page
+                    mainFrame.dispose(); // Close the home page
+                });
+            }).start();
         });
+
+
+        if (SessionUtil.isAdmin()) {
+            JButton adminButton = new JButton("Admin Page");
+            adminButton.setBounds(20, 20, 150, 30);
+            adminButton.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+            panel.add(adminButton);
+
+            adminButton.addActionListener(_ -> {
+                new AdminPage();
+                mainFrame.setVisible(false);
+            });
+        }
 
     }
 
@@ -154,22 +172,24 @@ public class HomePage extends JFrame {
 
         JLabel plantTypeLabel = new JLabel("Plant type :");
         plantTypeLabel.setFont(componentFont);
-        plantTypeLabel.setBounds(50, 100, 120, 20);
+        plantTypeLabel.setBounds(270, 152, 150, 20);
         orderFrame.add(plantTypeLabel);
 
         String[] plantTypes = getPlantTypesWithAvailability();
         JComboBox<String> plantType = new JComboBox<>(plantTypes);
-        plantType.setBounds(250, 100, 150, 20);
+        plantType.setBounds(380, 145, 150, 35);
+        plantType.setRenderer(new CenteredComboBoxRenderer());
         plantType.setFont(componentFont);
         orderFrame.add(plantType);
 
         JLabel quantityLabel = new JLabel("Quantity :");
         quantityLabel.setFont(componentFont);
-        quantityLabel.setBounds(50, 150, 150, 20);
+        quantityLabel.setBounds(280, 189, 150, 20);
         orderFrame.add(quantityLabel);
 
         JComboBox<Integer> quantityComboBox = new JComboBox<>();
-        quantityComboBox.setBounds(250, 150, 150, 20);
+        quantityComboBox.setBounds(380, 185, 150, 35);
+        quantityComboBox.setRenderer(new CenteredComboBoxRenderer());
         quantityComboBox.setFont(componentFont);
         orderFrame.add(quantityComboBox);
 
@@ -182,11 +202,11 @@ public class HomePage extends JFrame {
 
         JLabel addressLabel = new JLabel("Address :");
         addressLabel.setFont(componentFont);
-        addressLabel.setBounds(50, 200, 150, 20);
+        addressLabel.setBounds(284, 234, 150, 20);
         orderFrame.add(addressLabel);
 
         JTextArea addressArea = new JTextArea();
-        addressArea.setBounds(250, 200, 150, 80);
+        addressArea.setBounds(380, 230, 150, 80);
         addressArea.setFont(componentFont);
         addressArea.setLineWrap(true);
         addressArea.setWrapStyleWord(true);
@@ -194,17 +214,18 @@ public class HomePage extends JFrame {
 
         JLabel paymentTypeLabel = new JLabel("Payment type :");
         paymentTypeLabel.setFont(componentFont);
-        paymentTypeLabel.setBounds(50, 300, 150, 20);
+        paymentTypeLabel.setBounds(240, 324, 150, 20);
         orderFrame.add(paymentTypeLabel);
 
         String[] paymentTypes = {"Select", "Cash", "Card", "UPI"};
         JComboBox<String> paymentType = new JComboBox<>(paymentTypes);
-        paymentType.setBounds(250, 300, 150, 20);
+        paymentType.setBounds(380, 320, 150, 35);
+        paymentType.setRenderer(new CenteredComboBoxRenderer());
         paymentType.setFont(componentFont);
         orderFrame.add(paymentType);
 
         JButton orderPlantNowButton = new JButton("Order plant");
-        orderPlantNowButton.setBounds(175, 350, 150, 20);
+        orderPlantNowButton.setBounds(227, 365, 325, 35);
         orderPlantNowButton.setFont(componentFont);
         orderFrame.add(orderPlantNowButton);
 
@@ -246,21 +267,21 @@ public class HomePage extends JFrame {
     private void plantComponents(JFrame donateFrame, JFrame mainFrame) {
         Font componentFont = new Font("Times New Roman", Font.PLAIN, 20);
 
-        JLabel plantTypeLabel = new JLabel("Plant type:");
+        JLabel plantTypeLabel = new JLabel("Plant type :");
         plantTypeLabel.setFont(componentFont);
-        plantTypeLabel.setBounds(287, 160, 150, 20);
+        plantTypeLabel.setBounds(287, 194, 150, 20);
         donateFrame.add(plantTypeLabel);
 
         String[] plantTypes = {"Select", "Hibiscus", "Mango", "Neem", "Banyan"};
         JComboBox<String> plantType = new JComboBox<>(plantTypes);
-        plantType.setBounds(400, 160, 150, 35);
+        plantType.setBounds(400, 190, 150, 35);
         plantType.setRenderer(new CenteredComboBoxRenderer());
         plantType.setFont(componentFont);
         donateFrame.add(plantType);
 
-        JLabel numberOfTreesLabel = new JLabel("Number of trees:");
+        JLabel numberOfTreesLabel = new JLabel("Number of trees :");
         numberOfTreesLabel.setFont(componentFont);
-        numberOfTreesLabel.setBounds(237, 200, 150, 20);
+        numberOfTreesLabel.setBounds(237, 234, 150, 20);
         donateFrame.add(numberOfTreesLabel);
 
         Integer[] treeNumbers = new Integer[100];
@@ -268,14 +289,14 @@ public class HomePage extends JFrame {
             treeNumbers[i] = i + 1;
         }
         JComboBox<Integer> numberOfTrees = new JComboBox<>(treeNumbers);
-        numberOfTrees.setBounds(400, 200, 150, 35);
+        numberOfTrees.setBounds(400, 230, 150, 35);
         numberOfTrees.setRenderer(new CenteredComboBoxRenderer());
         numberOfTrees.setFont(componentFont);
         numberOfTrees.setSelectedIndex(0);
         donateFrame.add(numberOfTrees);
 
         JButton donatePlantNowButton = new JButton("Donate plant");
-        donatePlantNowButton.setBounds(227, 240, 325, 35);
+        donatePlantNowButton.setBounds(227, 270, 325, 35);
         donatePlantNowButton.setFont(componentFont);
         donateFrame.add(donatePlantNowButton);
 
@@ -298,16 +319,17 @@ public class HomePage extends JFrame {
 
         JLabel amountLabel = new JLabel("Amount :");
         amountLabel.setFont(componentFont);
-        amountLabel.setBounds(50, 150, 150, 20);
+        amountLabel.setBounds(301, 214, 150, 20);
         donateFrame.add(amountLabel);
 
         JTextField amountField = new JTextField();
-        amountField.setBounds(250, 150, 150, 20);
+        amountField.setBounds(400, 210, 150, 35);
+        amountField.setMargin(new Insets(0, 5, 0, 5));
         amountField.setFont(componentFont);
         donateFrame.add(amountField);
 
         JButton donateMoneyNowButton = new JButton("Donate money");
-        donateMoneyNowButton.setBounds(175, 200, 150, 20);
+        donateMoneyNowButton.setBounds(227, 270, 325, 35);
         donateMoneyNowButton.setFont(componentFont);
         donateFrame.add(donateMoneyNowButton);
 
@@ -353,8 +375,9 @@ public class HomePage extends JFrame {
 
     private void storeOrder(int userId, String plantType, int quantity, String address, String paymentType) {
         int plantPrice = switch (plantType.toLowerCase()) {
-            case "neem" -> 80;
-            case "hibiscus" -> 90;
+            case "neem" -> 50;
+            case "mango" -> 80;
+            case "hibiscus" -> 100;
             case "banyan" -> 150;
             default -> 0; // Default price if plant type is not recognized
         };

@@ -8,7 +8,7 @@ public class MySQL {
     private static final Logger LOGGER = Logger.getLogger(MySQL.class.getName());
     private static Connection connection = null;
 
-    private static final String URL = "jdbc:mysql://localhost:3306/plant_donation_test";
+    private static final String URL = "jdbc:mysql://localhost:3306/plant_donation_system";
     private static final String USER = "root";
     private static final String PASSWORD = "tanishq11";
 
