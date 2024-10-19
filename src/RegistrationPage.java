@@ -1,13 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RegistrationPage extends JFrame {
+    private static final Logger LOGGER = Logger.getLogger(RegistrationPage.class.getName());
     private JTextField usernameField;
     private JTextField nameField;
     private JTextField emailField;
@@ -19,11 +20,10 @@ public class RegistrationPage extends JFrame {
     private JRadioButton female;
     private JPasswordField passwordField;
     private JCheckBox isAdmin;
-    private JButton backButton;
 
     public RegistrationPage() {
         setTitle("Registration Page");
-        setSize(500, 500);
+        setMinimumSize(new Dimension(800, 800));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -42,60 +42,101 @@ public class RegistrationPage extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
 
         JLabel userLabel = new JLabel("Username");
+        userLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         panel.add(userLabel, gbc);
 
         gbc.gridx = 1;
-        usernameField = new JTextField(20);
+        usernameField = new JTextField();
+        usernameField.setPreferredSize(new Dimension(250, 35));
+        usernameField.setMargin(new Insets(0, 5, 0, 5));
+        usernameField.setFont(new Font("Roboto", Font.PLAIN, 16));
         panel.add(usernameField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
         JLabel nameLabel = new JLabel("Name");
+        nameLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         panel.add(nameLabel, gbc);
 
         gbc.gridx = 1;
-        nameField = new JTextField(20);
+        nameField = new JTextField();
+        nameField.setPreferredSize(new Dimension(250, 35));
+        nameField.setMargin(new Insets(0, 5, 0, 5));
+        nameField.setFont(new Font("Roboto", Font.PLAIN, 16));
         panel.add(nameField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
         JLabel emailLabel = new JLabel("Email");
+        emailLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         panel.add(emailLabel, gbc);
 
         gbc.gridx = 1;
-        emailField = new JTextField(20);
+        emailField = new JTextField();
+        emailField.setPreferredSize(new Dimension(250, 35));
+        emailField.setMargin(new Insets(0, 5, 0, 5));
+        emailField.setFont(new Font("Roboto", Font.PLAIN, 16));
         panel.add(emailField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 3;
         JLabel mobileLabel = new JLabel("Mobile");
+        mobileLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         panel.add(mobileLabel, gbc);
 
         gbc.gridx = 1;
-        mobileField = new JTextField(20);
+        mobileField = new JTextField();
+        mobileField.setPreferredSize(new Dimension(250, 35));
+        mobileField.setMargin(new Insets(0, 5, 0, 5));
+        mobileField.setFont(new Font("Roboto", Font.PLAIN, 16));
         panel.add(mobileField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 4;
         JLabel dobLabel = new JLabel("Date of Birth");
+        dobLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         panel.add(dobLabel, gbc);
 
         gbc.gridx = 1;
+        Dimension fieldSize = new Dimension(80, 35);
+
+        dobDay = new JComboBox<>(new String[]{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"});
+        dobDay.setPreferredSize(fieldSize);
+        dobDay.setRenderer(new CenteredComboBoxRenderer());
+
+        dobMonth = new JComboBox<>(new String[]{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"});
+        dobMonth.setPreferredSize(fieldSize);
+        dobMonth.setRenderer(new CenteredComboBoxRenderer());
+
+        String[] years = new String[2015 - 1925 + 1];
+        for (int i = 0; i < years.length; i++) {
+            years[i] = String.valueOf(1925 + i);
+        }
+        dobYear = new JComboBox<>(years);
+        dobYear.setPreferredSize(fieldSize);
+        dobYear.setRenderer(new CenteredComboBoxRenderer());
+
         JPanel dobPanel = new JPanel();
-        dobPanel.add(dobDay = new JComboBox<>(new String[]{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"}));
-        dobPanel.add(dobMonth = new JComboBox<>(new String[]{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"}));
-        dobPanel.add(dobYear = new JComboBox<>(new String[]{"2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010"}));
+        dobPanel.add(dobDay);
+        dobPanel.add(dobMonth);
+        dobPanel.add(dobYear);
+
         panel.add(dobPanel, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 5;
         JLabel genderLabel = new JLabel("Gender");
+        genderLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         panel.add(genderLabel, gbc);
 
         gbc.gridx = 1;
         JPanel genderPanel = new JPanel();
-        genderPanel.add(male = new JRadioButton("Male"));
-        genderPanel.add(female = new JRadioButton("Female"));
+        male = new JRadioButton("Male");
+        male.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        female = new JRadioButton("Female");
+        female.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        genderPanel.add(male);
+        genderPanel.add(female);
         ButtonGroup genderGroup = new ButtonGroup();
         genderGroup.add(male);
         genderGroup.add(female);
@@ -104,39 +145,40 @@ public class RegistrationPage extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 6;
         JLabel passwordLabel = new JLabel("Password");
+        passwordLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         panel.add(passwordLabel, gbc);
 
         gbc.gridx = 1;
-        passwordField = new JPasswordField(20);
+        passwordField = new JPasswordField();
+        passwordField.setPreferredSize(new Dimension(250, 35));
+        passwordField.setMargin(new Insets(0, 5, 0, 5));
+        passwordField.setFont(new Font("Roboto", Font.PLAIN, 16));
         panel.add(passwordField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 7;
         gbc.gridwidth = 2;
         isAdmin = new JCheckBox("Register as Admin");
+        isAdmin.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         panel.add(isAdmin, gbc);
 
         gbc.gridy = 8;
         JButton registerButton = new JButton("Register");
+        registerButton.setFont(new Font("Roboto", Font.PLAIN, 16));
+        registerButton.setPreferredSize(new Dimension(371, 35));
         panel.add(registerButton, gbc);
 
         gbc.gridy = 9;
-        backButton = new JButton("Back");
+        JButton backButton = new JButton("Back");
+        backButton.setFont(new Font("Roboto", Font.PLAIN, 16));
+        backButton.setPreferredSize(new Dimension(371, 35));
         panel.add(backButton, gbc);
 
-        registerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                registerUser();
-            }
-        });
+        registerButton.addActionListener(_ -> registerUser());
 
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new LoginPage();
-                dispose();
-            }
+        backButton.addActionListener(_ -> {
+            new LoginPage();
+            dispose();
         });
     }
 
@@ -150,7 +192,7 @@ public class RegistrationPage extends JFrame {
         String password = new String(passwordField.getPassword());
         boolean admin = isAdmin.isSelected();
 
-        if (username.isEmpty() || name.isEmpty() || email.isEmpty() || mobile.isEmpty() || dob.isEmpty() || gender.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || name.isEmpty() || email.isEmpty() || mobile.isEmpty() || gender.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please fill every field.");
             return;
         }
@@ -172,7 +214,7 @@ public class RegistrationPage extends JFrame {
             try {
                 password = EncryptionUtil.encrypt(password);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Error encrypting password.", e);
                 JOptionPane.showMessageDialog(this, "Error encrypting password.");
                 return;
             }
@@ -193,7 +235,7 @@ public class RegistrationPage extends JFrame {
                 dispose();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error registering user.", e);
             JOptionPane.showMessageDialog(this, "Error registering user.");
         } finally {
             MySQL.closeConnection();
@@ -202,5 +244,14 @@ public class RegistrationPage extends JFrame {
 
     public static void main(String[] args) {
         new RegistrationPage();
+    }
+}
+
+class CenteredComboBoxRenderer extends DefaultListCellRenderer {
+    @Override
+    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        return label;
     }
 }
