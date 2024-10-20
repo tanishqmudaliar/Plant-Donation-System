@@ -73,7 +73,7 @@ public class AdminPage extends JFrame {
             ResultSet tables = metaData.getTables(null, null, "%", new String[]{"TABLE"});
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
-                if (!"sys_config".equalsIgnoreCase(tableName)) {
+                if (!"sys_config".equalsIgnoreCase(tableName) && tabbedPane.indexOfTab(tableName) == -1) {
                     JTable table = new JTable();
                     table.setFont(new Font("SansSerif", Font.PLAIN, 18));
                     table.setRowHeight(30);
