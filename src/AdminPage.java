@@ -1,10 +1,6 @@
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
@@ -31,12 +27,9 @@ public class AdminPage extends JFrame {
         // Add button to redirect to HomePage
         JButton homeButton = new JButton("Go to Home Page");
         homeButton.setFont(new Font("SansSerif", Font.PLAIN, 18));
-        homeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new HomePage();
-                dispose();
-            }
+        homeButton.addActionListener(_ -> {
+            new HomePage();
+            dispose();
         });
 
         JPanel buttonPanel = new JPanel();
