@@ -137,15 +137,13 @@ public class HomePage extends JFrame {
         logoutButton.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         panel.add(logoutButton);
 
-        logoutButton.addActionListener(_ -> {
-            new Thread(() -> {
-                SessionUtil.setLoggedInUserId(0); // Clear the logged-in user ID
-                SwingUtilities.invokeLater(() -> {
-                    new LoginPage(); // Redirect to login page
-                    mainFrame.dispose(); // Close the home page
-                });
-            }).start();
-        });
+        logoutButton.addActionListener(_ -> new Thread(() -> {
+            SessionUtil.setLoggedInUserId(0); // Clear the logged-in user ID
+            SwingUtilities.invokeLater(() -> {
+                new LoginPage(); // Redirect to login page
+                mainFrame.dispose(); // Close the home page
+            });
+        }).start());
 
 
         if (SessionUtil.isAdmin()) {
@@ -305,7 +303,8 @@ public class HomePage extends JFrame {
             if ("Select".equals(selectedPlant)) {
                 JOptionPane.showMessageDialog(donateFrame, "Please select a plant type.", "ERROR", JOptionPane.ERROR_MESSAGE);
             } else {
-                int quantity = (Integer) numberOfTrees.getSelectedItem();
+                int quantity = (numberOfTrees.getSelectedItem() != null) ? (Integer) numberOfTrees.getSelectedItem() : 0;
+                assert selectedPlant != null;
                 storeDonation(SessionUtil.getLoggedInUserId(), selectedPlant, selectedPlant + " (" + quantity + ")", quantity);
                 JOptionPane.showMessageDialog(donateFrame, "Thanks for donating " + quantity + " " + selectedPlant + " plant(s)", "MESSAGE", JOptionPane.PLAIN_MESSAGE);
                 donateFrame.dispose();

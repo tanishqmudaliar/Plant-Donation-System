@@ -197,6 +197,21 @@ public class RegistrationPage extends JFrame {
             return;
         }
 
+        if (!mobile.matches("\\d+")) {
+            JOptionPane.showMessageDialog(this, "Mobile number must contain only numbers.");
+            return;
+        }
+
+        if (!email.contains("@")) {
+            JOptionPane.showMessageDialog(this, "Email must contain '@'.");
+            return;
+        }
+
+        if (!password.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) {
+            JOptionPane.showMessageDialog(this, "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            return;
+        }
+
         Connection connection = MySQL.getConnection();
         String checkQuery = "SELECT * FROM users WHERE username = ? OR email = ?";
         String insertQuery = "INSERT INTO users (username, name, email, mobile, dob, gender, password, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
