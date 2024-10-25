@@ -3,7 +3,7 @@
 ## Overview
 This project is a Java-based application that includes functionalities such as user registration, login, session management, and an admin page for database interaction. It uses AES encryption for securing passwords and connects to a MySQL database.
 
-![Project Overview](./src/assets/home%20screen.png)
+![Project Overview](./src/Assets/home%20screen.png)
 
 ## Features
 1. **Login Functionality**:
