@@ -30,17 +30,17 @@ public class HomePage extends JFrame {
     private void placeComponents(JPanel panel) {
         Font componentFont = new Font("Times New Roman", Font.PLAIN, 20);
 
-        ImageIcon headframe = new ImageIcon("C:\\Users\\tanis\\IdeaProjects\\Plant Donation System\\src\\Assets\\heading.png");
+        ImageIcon headframe = new ImageIcon("src/Assets/heading.png");
         JLabel heading = new JLabel(headframe);
         heading.setBounds(0, 0, 800, 100);
         panel.add(heading);
 
-        ImageIcon donateIcon = new ImageIcon("C:\\Users\\tanis\\IdeaProjects\\Plant Donation System\\src\\Assets\\donate.png");
+        ImageIcon donateIcon = new ImageIcon("src/Assets/donate.png");
         JLabel donateLabel = new JLabel(donateIcon);
         donateLabel.setBounds(50, 150, 300, 300);
         panel.add(donateLabel);
 
-        ImageIcon buyIcon = new ImageIcon("C:\\Users\\tanis\\IdeaProjects\\Plant Donation System\\src\\Assets\\buy.png");
+        ImageIcon buyIcon = new ImageIcon("src/Assets/buy.png");
         JLabel buyLabel = new JLabel(buyIcon);
         buyLabel.setBounds(450, 150, 300, 300);
         panel.add(buyLabel);
@@ -74,7 +74,7 @@ public class HomePage extends JFrame {
                 }
             });
 
-            ImageIcon donationFrameIcon = new ImageIcon("C:\\Users\\tanis\\IdeaProjects\\Plant Donation System\\src\\Assets\\donate frame head.png");
+            ImageIcon donationFrameIcon = new ImageIcon("src/Assets/donate frame head.png");
             JLabel donationFrameHeadLabel = new JLabel(donationFrameIcon);
             donationFrameHeadLabel.setBounds(0, 0, 800, 100);
             donateFrame.add(donationFrameHeadLabel);
@@ -163,7 +163,7 @@ public class HomePage extends JFrame {
     private void orderMethod(JFrame orderFrame, JFrame mainFrame) {
         Font componentFont = new Font("Times New Roman", Font.PLAIN, 20);
 
-        ImageIcon orderFrameIcon = new ImageIcon("C:\\Users\\tanis\\IdeaProjects\\Plant Donation System\\src\\Assets\\order frame head.png");
+        ImageIcon orderFrameIcon = new ImageIcon("src/Assets/order frame head.png");
         JLabel orderFrameHeadLabel = new JLabel(orderFrameIcon);
         orderFrameHeadLabel.setBounds(0, 0, 800, 100);
         orderFrame.add(orderFrameHeadLabel);
@@ -385,7 +385,7 @@ public class HomePage extends JFrame {
         String updateStorageQuery = "UPDATE storage SET " + plantType.toLowerCase() + " = " + plantType.toLowerCase() + " - ?, money_collected = money_collected + ? WHERE id = 1";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query);
-             PreparedStatement updateStorageStmt = connection.prepareStatement(updateStorageQuery)) {
+            PreparedStatement updateStorageStmt = connection.prepareStatement(updateStorageQuery)) {
             preparedStatement.setInt(1, userId);
             preparedStatement.setInt(2, plantType.equalsIgnoreCase("Hibiscus") ? quantity : 0);
             preparedStatement.setInt(3, plantType.equalsIgnoreCase("Mango") ? quantity : 0);
