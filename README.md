@@ -181,20 +181,25 @@ You should see: `users`, `storage`, `donations`, `orders`
 
 ### Step 6: Configure Database Connection
 
-1. In VS Code, open `src/MySQL.java`
-2. Update the following lines with your MySQL credentials:
+The application uses a `config.properties` file for database configuration instead of hardcoded values.
 
-```java
-private static final String URL = "jdbc:mysql://localhost:3306/plant_donation";
-private static final String USER = "root";
-private static final String PASSWORD = "YOUR_MYSQL_PASSWORD"; // Change this!
+1. In the `src/` folder, locate the file `config.properties.example`
+2. Create a copy of this file and rename it to `config.properties` (remove the `.example` extension)
+3. Open `src/config.properties` and update it with your MySQL credentials:
+
+```properties
+db.url=jdbc:mysql://localhost:3306/plant_donation
+db.user=root
+db.password=YOUR_MYSQL_PASSWORD
 ```
 
 **Important Notes:**
 
 - Replace `YOUR_MYSQL_PASSWORD` with the password you set during MySQL installation
 - If MySQL runs on a different port, change `3306` to your port number
-- If you created a different database user, update `USER` accordingly
+- If you created a different database user, update `db.user` accordingly
+- The `config.properties` file is loaded automatically by the application at runtime
+- **Security:** Never commit `config.properties` with real credentials to version control
 
 ### Step 7: Add MySQL Connector Library
 
@@ -238,10 +243,12 @@ Plant-Donation-System/
 │   │   └── order frame head.png
 │   ├── AdminPage.java               # Admin dashboard
 │   ├── CenteredComboBoxRenderer.java # UI component
+│   ├── config.properties            # Database configuration (create from example)
+│   ├── config.properties.example    # Configuration template
 │   ├── EncryptionUtil.java          # AES encryption utility
 │   ├── HomePage.java                # Main user interface
 │   ├── LoginPage.java               # Application entry point
-│   ├── MySQL.java                   # Database connection
+│   ├── MySQL.java                   # Database connection manager
 │   ├── RegistrationPage.java        # User registration
 │   ├── SessionUtil.java             # Session management
 │   └── WordWrapCellRenderer.java    # Table cell renderer
@@ -278,7 +285,7 @@ Logs all plant orders with pricing and delivery details.
 
 #### 2. "Access denied for user 'root'@'localhost'"
 
-**Solution:** Verify MySQL password in `MySQL.java` matches your MySQL installation.
+**Solution:** Verify MySQL credentials in `src/config.properties` match your MySQL installation password.
 
 #### 3. "Table 'plant_donation.users' doesn't exist"
 
@@ -307,9 +314,12 @@ Logs all plant orders with pricing and delivery details.
 ## Security Considerations
 
 - Change the AES encryption key in `EncryptionUtil.java` for production use
-- Use environment variables for database credentials instead of hardcoding
+- Never commit `config.properties` with real credentials to version control (use `.gitignore`)
+- Keep `config.properties.example` as a template with placeholder values
+- Use environment variables or secure vault systems for production deployments
 - Implement HTTPS if deploying as a web application
 - Regular database backups recommended
+- The application uses prepared statements to prevent SQL injection attacks
 
 ## Usage
 
