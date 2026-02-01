@@ -1,0 +1,24 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: plant_donation_db
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      # CRITICAL: This maps the Docker MySQL port (3306) to your PC's port (3306).
+      # This allows your local Java app to connect to Docker as if it were a local server.
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      # Automatically restores your backup.sql on the FIRST startup
+      - ./backup.sql:/docker-entrypoint-initdb.d/init.sql
+      # Persist data even if you delete the container
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:

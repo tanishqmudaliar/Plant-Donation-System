@@ -3,7 +3,8 @@
 A Java-based desktop application that facilitates plant donations and orders with secure user authentication, session management, and an admin dashboard for database interaction.
 
 ![Java](https://img.shields.io/badge/Java-17+-ED8B00?logo=openjdk&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1?logo=mysql&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.4-4479A1?logo=mysql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Required-2496ED?logo=docker&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Security](https://img.shields.io/badge/Encryption-AES-green.svg)
 ![Platform](https://img.shields.io/badge/Platform-Desktop-blue.svg)
@@ -45,30 +46,35 @@ Built with Java Swing for the GUI and MySQL for data persistence, this applicati
 ## Features
 
 ### User Authentication
+
 - Secure login with username and password
 - AES encryption for password storage
 - Session management with automatic logout
 - User registration with field validation
 
 ### Donation System
+
 - Donate plants (Hibiscus, Mango, Neem, Banyan)
 - Monetary donations
 - Real-time inventory updates
 - Donation history tracking
 
 ### Order Management
+
 - Browse available plants with live inventory
 - Place orders with quantity selection
 - Multiple payment options (Cash, Card, UPI)
 - Automatic price calculation and inventory deduction
 
 ### Admin Dashboard
+
 - View all database tables in tabbed interface
 - Real-time data visualization
 - User management capabilities
 - Transaction monitoring
 
 ### Security Features
+
 - AES encryption for sensitive data
 - Prepared statements to prevent SQL injection
 - Session-based access control
@@ -78,13 +84,14 @@ Built with Java Swing for the GUI and MySQL for data persistence, this applicati
 
 ## Tech Stack
 
-| Layer | Technologies |
-|-------|-------------|
-| **Language** | Java 17+ |
-| **GUI** | Java Swing |
-| **Database** | MySQL 8.0+ |
-| **Encryption** | AES (Java Cryptography) |
-| **Database Driver** | MySQL Connector/J |
+| Layer                | Technologies            |
+| -------------------- | ----------------------- |
+| **Language**         | Java 17+                |
+| **GUI**              | Java Swing              |
+| **Database**         | MySQL 8.4 (Docker)      |
+| **Containerization** | Docker & Docker Compose |
+| **Encryption**       | AES (Java Cryptography) |
+| **Database Driver**  | MySQL Connector/J       |
 
 ---
 
@@ -152,7 +159,7 @@ Built with Java Swing for the GUI and MySQL for data persistence, this applicati
 - **Visual Studio Code** ([Download](https://code.visualstudio.com/download/))
 - **Extension Pack for Java** (Install from VS Code Extensions)
 - **Java Development Kit (JDK) 17 or higher** ([Download](https://www.oracle.com/in/java/technologies/downloads/))
-- **MySQL Server** ([Download](https://dev.mysql.com/downloads/mysql/))
+- **Docker Desktop** ([Download](https://www.docker.com/products/docker-desktop/))
 - **MySQL Connector/J** (Already included in repository)
 
 ### Installation
@@ -185,6 +192,7 @@ java -version
 ```
 
 Expected output (version may vary):
+
 ```
 java version "17.0.x" or higher
 Java(TM) SE Runtime Environment (build 17.0.x+xx-xxx)
@@ -193,23 +201,66 @@ Java HotSpot(TM) 64-Bit Server VM (build 17.0.x+xx-xxx, mixed mode, sharing)
 
 ### Database Setup
 
-#### A. Install MySQL Server
+#### A. Install Docker Desktop
 
-1. Download MySQL Server from [MySQL Downloads](https://dev.mysql.com/downloads/mysql/)
-2. Run the installer
-3. **Remember the root password** you set
-4. **Note the port number** (default is 3306)
+1. Download Docker Desktop from [Docker Downloads](https://www.docker.com/products/docker-desktop/)
+2. Run the installer and follow the setup wizard
+3. Start Docker Desktop and ensure it's running
 
-#### B. Create Database and Tables
+#### B. Create Environment Configuration
 
-Log into MySQL and execute:
+1. In the project root directory, create a `.env` file:
+
+```bash
+MYSQL_DB=plant_donation
+MYSQL_PASSWORD=your_secure_password_here
+MYSQL_PORT=3306
+```
+
+**⚠️ Important**: Replace `your_secure_password_here` with a strong password of your choice.
+
+#### C. Docker Compose File
+
+1. The `docker-compose.yml` file is already included in the repository root
+2. Review the configuration to understand the setup:
+
+```yaml
+services:
+  db:
+    image: mysql:8.4
+    container_name: plant_donation_db
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      # Maps Docker MySQL port (3306) to your PC's port (3306)
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      # Automatically restores backup.sql on first startup
+      - ./backup.sql:/docker-entrypoint-initdb.d/init.sql
+      # Persist data even if you delete the container
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
+```
+
+#### D. Prepare Database Backup
+
+1. Place your `backup.sql` file in the project root directory
+2. This file will automatically initialize the database on first startup
+
+**Note**: If you don't have a `backup.sql`, create one with this content:
 
 ```sql
--- Create Database
-CREATE DATABASE plant_donation;
+CREATE DATABASE IF NOT EXISTS plant_donation;
 USE plant_donation;
 
--- Create Users Table
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -222,9 +273,8 @@ CREATE TABLE users (
     is_admin BOOLEAN DEFAULT FALSE
 );
 
--- Create Storage/Inventory Table
 CREATE TABLE storage (
-    id INT PRIMARY KEY,
+    id INT PRIMARY KEY DEFAULT 1,
     hibiscus INT DEFAULT 0,
     mango INT DEFAULT 0,
     neem INT DEFAULT 0,
@@ -232,21 +282,18 @@ CREATE TABLE storage (
     money_collected INT DEFAULT 0
 );
 
--- Initialize Storage (Required for the app to function)
 INSERT INTO storage (id, hibiscus, mango, neem, banyan, money_collected)
-VALUES (1, 50, 50, 50, 50, 0);
+VALUES (1, 0, 0, 0, 0, 0);
 
--- Create Donations Table
 CREATE TABLE donations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     donation_type VARCHAR(50) NOT NULL,
-    donation_detail VARCHAR(255) NOT NULL,
+    donation_detail VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- Create Orders Table
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -258,39 +305,79 @@ CREATE TABLE orders (
     address TEXT NOT NULL,
     payment_type VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 ```
 
-#### C. Verify Database Creation
+#### E. Start the Database
 
-```sql
-SHOW TABLES;
+1. Open a terminal in the project root directory
+2. Start the MySQL container:
+
+```bash
+docker compose up -d
 ```
 
-You should see: `users`, `storage`, `donations`, `orders`
+3. Verify the database is running:
+
+```bash
+docker compose ps
+```
+
+You should see `plant_donation_db` with status `Up` and `healthy`.
+
+#### F. Verify Database Connection
+
+To check if the database is accessible:
+
+```bash
+docker compose exec db mysql -uroot -p${MYSQL_PASSWORD} -e "SHOW DATABASES;"
+```
+
+You should see `plant_donation` in the list.
 
 ### Configuration
 
-Create a `config.properties` file from the template:
+#### Create Application Configuration File
 
-1. Locate `src/config.properties.example`
-2. Copy and rename to `src/config.properties`
-3. Update with your MySQL credentials:
+1. Navigate to the `src/` directory
+2. Copy `config.properties.example` to `config.properties`:
 
-```properties
-db.url=jdbc:mysql://localhost:3306/plant_donation
-db.user=root
-db.password=YOUR_MYSQL_PASSWORD
+```bash
+cp src/config.properties.example src/config.properties
 ```
 
-| Property | Description | Required |
-|----------|-------------|----------|
-| `db.url` | JDBC connection URL | Yes |
-| `db.user` | MySQL username | Yes |
-| `db.password` | MySQL password | Yes |
+3. Open `src/config.properties` and update with your settings:
 
-> **Security Note**: Never commit `config.properties` with real credentials to version control.
+```properties
+# Database Configuration
+db.url=jdbc:mysql://localhost:3306/plant_donation
+db.user=root
+db.password=your_secure_password_here
+
+# Application Settings
+app.name=Plant Donation System
+app.version=1.0
+```
+
+**⚠️ Important**:
+
+- Use the **same password** you set in the `.env` file
+- The hostname is `localhost` because Docker maps port 3306 to your local machine
+- **Never commit** `config.properties` to version control
+
+#### Verify Configuration
+
+Your project structure should now include:
+
+```
+Plant-Donation-System/
+├── docker-compose.yml          # ✓ Created
+├── .env                        # ✓ Created (don't commit!)
+├── backup.sql                  # ✓ Created/Placed
+├── src/
+│   └── config.properties       # ✓ Created (don't commit!)
+```
 
 ### Running the Application
 
@@ -326,7 +413,7 @@ db.password=YOUR_MYSQL_PASSWORD
 ```
 Plant-Donation-System/
 ├── src/
-│   ├── Assets/                      # UI Images and Icons
+│   ├── Assets/                         # UI Images and Icons
 │   │   ├── home screen.png
 │   │   ├── heading.png
 │   │   ├── donate.png
@@ -335,23 +422,28 @@ Plant-Donation-System/
 │   │   ├── order frame head.png
 │   │   └── refference.png
 │   │
-│   ├── AdminPage.java               # Admin dashboard
-│   ├── CenteredComboBoxRenderer.java # UI component
-│   ├── config.properties            # Database config (create from example)
-│   ├── config.properties.example    # Configuration template
-│   ├── EncryptionUtil.java          # AES encryption utility
-│   ├── HomePage.java                # Main user interface
-│   ├── LoginPage.java               # Application entry point
-│   ├── MySQL.java                   # Database connection manager
-│   ├── RegistrationPage.java        # User registration
-│   ├── SessionUtil.java             # Session management
-│   └── WordWrapCellRenderer.java    # Table cell renderer
+│   ├── AdminPage.java                  # Admin dashboard
+│   ├── CenteredComboBoxRenderer.java   # UI component
+│   ├── config.properties               # Database config (create from example)
+│   ├── config.properties.example       # Configuration template
+│   ├── EncryptionUtil.java             # AES encryption utility
+│   ├── HomePage.java                   # Main user interface
+│   ├── LoginPage.java                  # Application entry point
+│   ├── MySQL.java                      # Database connection manager
+│   ├── RegistrationPage.java           # User registration
+│   ├── SessionUtil.java                 # Session management
+│   └── WordWrapCellRenderer.java       # Table cell renderer
 │
-├── lib/                             # External libraries
+├── lib/                                # External libraries
 │   └── mysql-connector-j-9.1.0.jar
 │
-├── LICENSE                          # MIT License
-└── README.md                        # Project documentation
+├── .env                                # Environment variables (gitignored)
+├── .env.example                        # Template for .env file
+├── backup.sql                          # Database initialization script
+├── docker-compose.yml                  # Docker MySQL configuration
+├── .gitignore                          # Git ignore rules
+├── LICENSE                             # MIT License
+└── README.md                           # Project documentation
 ```
 
 ---
@@ -360,53 +452,53 @@ Plant-Donation-System/
 
 ### Users Table
 
-| Column | Type | Description |
-|--------|------|-------------|
-| id | INT | Primary key, auto-increment |
-| username | VARCHAR(50) | Unique username |
-| name | VARCHAR(100) | Full name |
-| email | VARCHAR(100) | Unique email |
-| mobile | VARCHAR(15) | Phone number |
-| dob | DATE | Date of birth |
-| gender | VARCHAR(10) | Gender |
-| password | VARCHAR(255) | AES encrypted password |
-| is_admin | BOOLEAN | Admin role flag |
+| Column   | Type         | Description                 |
+| -------- | ------------ | --------------------------- |
+| id       | INT          | Primary key, auto-increment |
+| username | VARCHAR(50)  | Unique username             |
+| name     | VARCHAR(100) | Full name                   |
+| email    | VARCHAR(100) | Unique email                |
+| mobile   | VARCHAR(15)  | Phone number                |
+| dob      | DATE         | Date of birth               |
+| gender   | VARCHAR(10)  | Gender                      |
+| password | VARCHAR(255) | AES encrypted password      |
+| is_admin | BOOLEAN      | Admin role flag             |
 
 ### Storage Table
 
-| Column | Type | Description |
-|--------|------|-------------|
-| id | INT | Primary key |
-| hibiscus | INT | Hibiscus plant count |
-| mango | INT | Mango plant count |
-| neem | INT | Neem plant count |
-| banyan | INT | Banyan plant count |
-| money_collected | INT | Total monetary donations |
+| Column          | Type | Description              |
+| --------------- | ---- | ------------------------ |
+| id              | INT  | Primary key              |
+| hibiscus        | INT  | Hibiscus plant count     |
+| mango           | INT  | Mango plant count        |
+| neem            | INT  | Neem plant count         |
+| banyan          | INT  | Banyan plant count       |
+| money_collected | INT  | Total monetary donations |
 
 ### Donations Table
 
-| Column | Type | Description |
-|--------|------|-------------|
-| id | INT | Primary key, auto-increment |
-| user_id | INT | Foreign key to users |
-| donation_type | VARCHAR(50) | Type of donation |
-| donation_detail | VARCHAR(255) | Donation details |
-| created_at | TIMESTAMP | Donation timestamp |
+| Column          | Type         | Description                 |
+| --------------- | ------------ | --------------------------- |
+| id              | INT          | Primary key, auto-increment |
+| user_id         | INT          | Foreign key to users        |
+| donation_type   | VARCHAR(50)  | Type of donation            |
+| donation_detail | VARCHAR(255) | Donation details            |
+| created_at      | TIMESTAMP    | Donation timestamp          |
 
 ### Orders Table
 
-| Column | Type | Description |
-|--------|------|-------------|
-| id | INT | Primary key, auto-increment |
-| user_id | INT | Foreign key to users |
-| hibiscus | INT | Hibiscus quantity ordered |
-| mango | INT | Mango quantity ordered |
-| neem | INT | Neem quantity ordered |
-| banyan | INT | Banyan quantity ordered |
-| price | INT | Total price |
-| address | TEXT | Delivery address |
-| payment_type | VARCHAR(50) | Payment method |
-| created_at | TIMESTAMP | Order timestamp |
+| Column       | Type        | Description                 |
+| ------------ | ----------- | --------------------------- |
+| id           | INT         | Primary key, auto-increment |
+| user_id      | INT         | Foreign key to users        |
+| hibiscus     | INT         | Hibiscus quantity ordered   |
+| mango        | INT         | Mango quantity ordered      |
+| neem         | INT         | Neem quantity ordered       |
+| banyan       | INT         | Banyan quantity ordered     |
+| price        | INT         | Total price                 |
+| address      | TEXT        | Delivery address            |
+| payment_type | VARCHAR(50) | Payment method              |
+| created_at   | TIMESTAMP   | Order timestamp             |
 
 ---
 
@@ -422,13 +514,13 @@ Plant-Donation-System/
 
 ## Security Considerations
 
-| Feature | Implementation |
-|---------|---------------|
-| **Password Storage** | AES encryption for all passwords |
-| **SQL Injection** | Prepared statements for all queries |
-| **Session Management** | Session-based access control |
-| **Role Verification** | Admin role check for dashboard access |
-| **Configuration** | Sensitive data in separate config file |
+| Feature                | Implementation                         |
+| ---------------------- | -------------------------------------- |
+| **Password Storage**   | AES encryption for all passwords       |
+| **SQL Injection**      | Prepared statements for all queries    |
+| **Session Management** | Session-based access control           |
+| **Role Verification**  | Admin role check for dashboard access  |
+| **Configuration**      | Sensitive data in separate config file |
 
 ### Production Recommendations
 
@@ -444,28 +536,69 @@ Plant-Donation-System/
 ## Troubleshooting
 
 ### "No suitable driver found for jdbc:mysql://localhost:3306/plant_donation"
+
 **Solution**: Ensure MySQL Connector/J is added to Referenced Libraries in VS Code.
 
 ### "Access denied for user 'root'@'localhost'"
-**Solution**: Verify MySQL credentials in `src/config.properties` match your MySQL installation password.
+
+**Solution**: Verify that the password in `src/config.properties` matches the password in `.env` file.
 
 ### "Table 'plant_donation.users' doesn't exist"
-**Solution**: Execute the SQL script from [Database Setup](#database-setup) to create all tables.
+
+**Solution**:
+
+1. Ensure `backup.sql` is in the project root
+2. Restart the Docker container: `docker compose down && docker compose up -d`
+3. The database will be initialized automatically on startup
+
+### "Communications link failure" or "Connection refused"
+
+**Solution**:
+
+1. Check if Docker Desktop is running
+2. Verify the database container is running: `docker compose ps`
+3. Check container health: `docker compose logs db`
+4. Restart the container: `docker compose restart db`
+
+### Database not initializing from backup.sql
+
+**Solution**:
+
+1. Stop and remove the container and volumes:
+
+```bash
+   docker compose down -v
+```
+
+2. Start fresh (this will re-initialize from backup.sql):
+
+```bash
+   docker compose up -d
+```
 
 ### Images not showing
+
 **Solution**: Update image paths in `HomePage.java` to use relative paths starting with `src/Assets/`.
 
 ### "Could not find or load main class"
+
 **Solution**:
+
 - Ensure Java extension pack is installed
 - Reload VS Code window (`Ctrl+Shift+P` → "Developer: Reload Window")
 - Check that JDK is properly configured
 
-### MySQL service not running
-**Solution**:
-- **Windows**: Open Services, find MySQL, click Start
-- **Mac**: `sudo /usr/local/mysql/support-files/mysql.server start`
-- **Linux**: `sudo systemctl start mysql`
+### Docker Commands Reference
+
+| Command                                  | Description                                 |
+| ---------------------------------------- | ------------------------------------------- |
+| `docker compose up -d`                   | Start the database in background            |
+| `docker compose down`                    | Stop and remove the database container      |
+| `docker compose down -v`                 | Stop and remove container + delete all data |
+| `docker compose ps`                      | Check container status                      |
+| `docker compose logs db`                 | View database logs                          |
+| `docker compose restart db`              | Restart the database                        |
+| `docker compose exec db mysql -uroot -p` | Connect to MySQL shell                      |
 
 ---
 
