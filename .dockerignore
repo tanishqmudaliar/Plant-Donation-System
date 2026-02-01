@@ -1,0 +1,71 @@
+# Compiled class files
+*.class
+out/
+bin/
+target/
+build/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+.metadata/
+nbproject/
+*.nb-gradle/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Configuration files (sensitive data)
+.env
+src/config.properties
+
+# Logs
+*.log
+
+# Docker
+db_data/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+LICENSE
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+*~
+
+# Package files (if you're building inside Docker)
+*.jar
+*.war
+*.ear
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Gradle
+.gradle/
+gradle/
+gradlew
+gradlew.bat
