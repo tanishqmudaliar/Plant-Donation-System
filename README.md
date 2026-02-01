@@ -330,11 +330,33 @@ You should see `plant_donation_db` with status `Up` and `healthy`.
 
 To check if the database is accessible:
 
+**On Linux/Mac/Git Bash:**
+
 ```bash
-docker compose exec db mysql -uroot -p${MYSQL_PASSWORD} -e "SHOW DATABASES;"
+docker compose exec db mysql -uroot -p$(grep MYSQL_PASSWORD .env | cut -d'=' -f2) -e "SHOW DATABASES;"
 ```
 
-You should see `plant_donation` in the list.
+**On Windows (PowerShell):**
+
+```powershell
+$password = (Get-Content .env | Select-String "MYSQL_PASSWORD").ToString().Split("=")[1]
+docker compose exec db mysql -uroot -p"$password" -e "SHOW DATABASES;"
+```
+
+**On Windows (Command Prompt) - Interactive:**
+
+```cmd
+docker compose exec db mysql -uroot -p
+```
+
+Then enter your password when prompted and run:
+
+```sql
+SHOW DATABASES;
+exit;
+```
+
+You should see `plant_donation` in the list of databases.
 
 ### Configuration
 
