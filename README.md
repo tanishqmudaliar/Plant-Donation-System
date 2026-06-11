@@ -85,7 +85,7 @@ Built with Java Swing for the GUI and MySQL for data persistence, this applicati
 ## Tech Stack
 
 | Layer                | Technologies            |
-|----------------------|-------------------------|
+| -------------------- | ----------------------- |
 | **Language**         | Java 17+                |
 | **GUI**              | Java Swing              |
 | **Database**         | MySQL 8.4 (Docker)      |
@@ -353,10 +353,11 @@ Then enter your password when prompted and run:
 
 ```sql
 SHOW DATABASES;
-exit
 ```
 
 You should see `plant_donation` in the list of databases.
+
+> To exit the MySQL command-line interface, type `exit` and press Enter.
 
 ### Configuration
 
@@ -475,7 +476,7 @@ Plant-Donation-System/
 ### Users Table
 
 | Column   | Type         | Description                 |
-|----------|--------------|-----------------------------|
+| -------- | ------------ | --------------------------- |
 | id       | INT          | Primary key, auto-increment |
 | username | VARCHAR(50)  | Unique username             |
 | name     | VARCHAR(100) | Full name                   |
@@ -489,7 +490,7 @@ Plant-Donation-System/
 ### Storage Table
 
 | Column          | Type | Description              |
-|-----------------|------|--------------------------|
+| --------------- | ---- | ------------------------ |
 | id              | INT  | Primary key              |
 | hibiscus        | INT  | Hibiscus plant count     |
 | mango           | INT  | Mango plant count        |
@@ -500,7 +501,7 @@ Plant-Donation-System/
 ### Donations Table
 
 | Column          | Type         | Description                 |
-|-----------------|--------------|-----------------------------|
+| --------------- | ------------ | --------------------------- |
 | id              | INT          | Primary key, auto-increment |
 | user_id         | INT          | Foreign key to users        |
 | donation_type   | VARCHAR(50)  | Type of donation            |
@@ -510,7 +511,7 @@ Plant-Donation-System/
 ### Orders Table
 
 | Column       | Type        | Description                 |
-|--------------|-------------|-----------------------------|
+| ------------ | ----------- | --------------------------- |
 | id           | INT         | Primary key, auto-increment |
 | user_id      | INT         | Foreign key to users        |
 | hibiscus     | INT         | Hibiscus quantity ordered   |
@@ -537,7 +538,7 @@ Plant-Donation-System/
 ## Security Considerations
 
 | Feature                | Implementation                         |
-|------------------------|----------------------------------------|
+| ---------------------- | -------------------------------------- |
 | **Password Storage**   | AES encryption for all passwords       |
 | **SQL Injection**      | Prepared statements for all queries    |
 | **Session Management** | Session-based access control           |
@@ -613,7 +614,7 @@ Plant-Donation-System/
 ### Docker Commands Reference
 
 | Command                                  | Description                                 |
-|------------------------------------------|---------------------------------------------|
+| ---------------------------------------- | ------------------------------------------- |
 | `docker compose up -d`                   | Start the database in background            |
 | `docker compose down`                    | Stop and remove the database container      |
 | `docker compose down -v`                 | Stop and remove container + delete all data |
