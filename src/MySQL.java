@@ -16,12 +16,12 @@ public class MySQL {
         try (InputStream input = MySQL.class.getClassLoader()
                 .getResourceAsStream("config.properties")) {
             if (input == null) {
-                LOGGER.log(Level.SEVERE, "Unable to find config.properties");
+                LOGGER.log(Level.INFO, "config.properties not found on classpath; falling back to environment variables.");
             } else {
                 props.load(input);
             }
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error loading config.properties", e);
+            LOGGER.log(Level.WARNING, "Error loading config.properties", e);
         }
     }
 
@@ -29,18 +29,23 @@ public class MySQL {
     }
 
     public static Connection getConnection() {
-        if (connection == null) {
-            try {
+        try {
+            if (connection == null || connection.isClosed()) {
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                String url = props.getProperty("db.url");
-                String user = props.getProperty("db.user");
-                String password = props.getProperty("db.password");
+
+                String envUrl = System.getenv("DB_URL");
+                String envUser = System.getenv("DB_USER");
+                String envPassword = System.getenv("DB_PASSWORD");
+
+                String url = (envUrl != null && !envUrl.isBlank()) ? envUrl : props.getProperty("db.url");
+                String user = (envUser != null && !envUser.isBlank()) ? envUser : props.getProperty("db.user");
+                String password = (envPassword != null && !envPassword.isBlank()) ? envPassword : props.getProperty("db.password");
 
                 connection = DriverManager.getConnection(url, user, password);
                 System.out.println("Connected to MySQL database!");
-            } catch (SQLException | ClassNotFoundException e) {
-                LOGGER.log(Level.SEVERE, "Error connecting to the database.", e);
             }
+        } catch (SQLException | ClassNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "Error connecting to the database.", e);
         }
         return connection;
     }
